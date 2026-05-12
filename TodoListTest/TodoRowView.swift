@@ -6,7 +6,9 @@
 import SwiftUI
 
 struct TodoRowView: View {
-    @Binding var todo: Todo
+    let todo: Todo
+    var onToggle: () -> Void = {}
+    var onDelete: () -> Void = {}
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -17,9 +19,7 @@ struct TodoRowView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    todo.isCompleted.toggle()
-                }
+                onToggle()
             } label: {
                 Image(systemName: todo.isCompleted ? "checkmark.circle" : "circle")
                     .font(.system(size: 24, weight: .light))
@@ -66,7 +66,7 @@ struct TodoRowView: View {
             }
 
             Button(role: .destructive) {
-                // удаление — позже
+                onDelete()
             } label: {
                 Label("Удалить", systemImage: "trash")
             }
@@ -101,19 +101,19 @@ struct TodoRowView: View {
 }
 
 #Preview("Активная") {
-    TodoRowView(todo: .constant(Todo.sampleData[0]))
+    TodoRowView(todo: Todo.sampleData[0])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }
 
 #Preview("Выполненная") {
-    TodoRowView(todo: .constant(Todo.sampleData[1]))
+    TodoRowView(todo: Todo.sampleData[1])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }
 
 #Preview("Без описания") {
-    TodoRowView(todo: .constant(Todo.sampleData[4]))
+    TodoRowView(todo: Todo.sampleData[4])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }
