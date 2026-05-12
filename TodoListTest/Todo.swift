@@ -60,6 +60,11 @@ extension Todo {
             title: "Доделать тестовое задание",
             details: "TodoList с CoreData и API",
             createdAt: Date()
+        ),
+        Todo(
+            title: "Вечерний отдых",
+            details: "Найти время для расслабления перед сном: посмотреть фильм или послушать музыку",
+            createdAt: Date()
         )
     ]
 }
