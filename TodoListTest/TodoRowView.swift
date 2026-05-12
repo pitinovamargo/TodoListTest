@@ -52,6 +52,51 @@ struct TodoRowView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .contextMenu {
+            Button {
+                // редактирование — позже
+            } label: {
+                Label("Редактировать", systemImage: "square.and.pencil")
+            }
+
+            Button {
+                // поделиться — позже
+            } label: {
+                Label("Поделиться", systemImage: "square.and.arrow.up")
+            }
+
+            Button(role: .destructive) {
+                // удаление — позже
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+        } preview: {
+            contextPreview
+        }
+    }
+
+    private var contextPreview: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(todo.title)
+                .font(.system(size: 16, weight: .medium))
+                .tracking(-0.43)
+                .foregroundStyle(Color("AppWhite"))
+
+            if !todo.details.isEmpty {
+                Text(todo.details)
+                    .font(.system(size: 12, weight: .regular))
+                    .lineSpacing(16 - 12)
+                    .foregroundStyle(Color("AppWhite"))
+            }
+
+            Text(Self.dateFormatter.string(from: todo.createdAt))
+                .font(.system(size: 12, weight: .regular))
+                .foregroundStyle(Color("AppGray"))
+                .padding(.top, 6)
+        }
+        .padding(16)
+        .frame(width: UIScreen.main.bounds.width - 40, alignment: .leading)
+        .background(Color("AppSearchBackground"))
     }
 }
 
