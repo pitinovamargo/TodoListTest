@@ -59,9 +59,7 @@ struct TodoRowView: View {
                 Label("Редактировать", systemImage: "square.and.pencil")
             }
 
-            Button {
-                // поделиться — позже
-            } label: {
+            ShareLink(item: todo.shareText) {
                 Label("Поделиться", systemImage: "square.and.arrow.up")
             }
 

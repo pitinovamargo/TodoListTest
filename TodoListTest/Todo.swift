@@ -28,6 +28,12 @@ struct Todo: Identifiable, Hashable {
 }
 
 extension Todo {
+    var shareText: String {
+        details.isEmpty ? title : "\(title)\n\n\(details)"
+    }
+}
+
+extension Todo {
     static let sampleData: [Todo] = [
         Todo(
             title: "Купить продукты",
