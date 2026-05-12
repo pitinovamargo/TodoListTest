@@ -9,6 +9,7 @@ struct TodoRowView: View {
     let todo: Todo
     var onToggle: () -> Void = {}
     var onDelete: () -> Void = {}
+    var onEdit: () -> Void = {}
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -54,7 +55,7 @@ struct TodoRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .contextMenu {
             Button {
-                // редактирование — позже
+                onEdit()
             } label: {
                 Label("Редактировать", systemImage: "square.and.pencil")
             }

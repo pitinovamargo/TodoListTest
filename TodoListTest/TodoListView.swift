@@ -9,7 +9,7 @@ struct TodoListView: View {
     @StateObject private var viewModel = TodoListViewModel()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $viewModel.path) {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Задачи")
                     .font(.system(size: 36, weight: .bold))
@@ -36,6 +36,9 @@ struct TodoListView: View {
                                     withAnimation {
                                         viewModel.delete(todo)
                                     }
+                                },
+                                onEdit: {
+                                    viewModel.path.append(todo)
                                 }
                             )
                             if todo.id != viewModel.todos.last?.id {
@@ -57,6 +60,11 @@ struct TodoListView: View {
             .toolbar(.hidden, for: .navigationBar)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 bottomBar
+            }
+            .navigationDestination(for: Todo.self) { todo in
+                TodoEditView(todo: todo) { updatedTodo in
+                    viewModel.update(updatedTodo)
+                }
             }
         }
     }
