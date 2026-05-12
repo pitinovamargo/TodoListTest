@@ -6,7 +6,10 @@
 import SwiftUI
 
 struct TodoRowView: View {
-    @Binding var todo: Todo
+    let todo: Todo
+    var onToggle: () -> Void = {}
+    var onDelete: () -> Void = {}
+    var onEdit: () -> Void = {}
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -17,13 +20,11 @@ struct TodoRowView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    todo.isCompleted.toggle()
-                }
+                onToggle()
             } label: {
                 Image(systemName: todo.isCompleted ? "checkmark.circle" : "circle")
                     .font(.system(size: 24, weight: .light))
-                    .frame(width: 24, height: 24)
+                    .frame(width: 28, height: 28)
                     .foregroundStyle(todo.isCompleted ? Color("AppYellow") : Color("AppStroke"))
                     .contentShape(Rectangle())
             }
@@ -31,44 +32,87 @@ struct TodoRowView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(todo.title)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 17, weight: .medium))
                     .tracking(-0.43)
                     .strikethrough(todo.isCompleted, color: Color("AppGray"))
                     .foregroundStyle(todo.isCompleted ? Color("AppGray") : Color("AppWhite"))
 
                 if !todo.details.isEmpty {
                     Text(todo.details)
-                        .font(.system(size: 12, weight: .regular))
-                        .lineSpacing(16 - 12)
-                        .foregroundStyle(Color("AppGray"))
+                        .font(.system(size: 13, weight: .regular))
+                        .lineSpacing(6)
+                        .foregroundStyle(todo.isCompleted ? Color("AppGray") : Color("AppWhite"))
                         .lineLimit(2)
                 }
 
                 Text(Self.dateFormatter.string(from: todo.createdAt))
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 13, weight: .regular))
                     .foregroundStyle(Color("AppGray"))
             }
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .contextMenu {
+            Button {
+                onEdit()
+            } label: {
+                Label("Редактировать", systemImage: "square.and.pencil")
+            }
+
+            ShareLink(item: todo.shareText) {
+                Label("Поделиться", systemImage: "square.and.arrow.up")
+            }
+
+            Button(role: .destructive) {
+                onDelete()
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+        } preview: {
+            contextPreview
+        }
+    }
+
+    private var contextPreview: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(todo.title)
+                .font(.system(size: 17, weight: .medium))
+                .tracking(-0.43)
+                .foregroundStyle(Color("AppWhite"))
+
+            if !todo.details.isEmpty {
+                Text(todo.details)
+                    .font(.system(size: 13, weight: .regular))
+                    .lineSpacing(4)
+                    .foregroundStyle(Color("AppWhite"))
+            }
+
+            Text(Self.dateFormatter.string(from: todo.createdAt))
+                .font(.system(size: 13, weight: .regular))
+                .foregroundStyle(Color("AppGray"))
+                .padding(.top, 6)
+        }
+        .padding()
+        .frame(width: UIScreen.main.bounds.width - 40, alignment: .leading)
+        .background(Color("AppSearchBackground"))
     }
 }
 
 #Preview("Активная") {
-    TodoRowView(todo: .constant(Todo.sampleData[0]))
+    TodoRowView(todo: Todo.sampleData[0])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }
 
 #Preview("Выполненная") {
-    TodoRowView(todo: .constant(Todo.sampleData[1]))
+    TodoRowView(todo: Todo.sampleData[1])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }
 
 #Preview("Без описания") {
-    TodoRowView(todo: .constant(Todo.sampleData[4]))
+    TodoRowView(todo: Todo.sampleData[4])
         .background(Color("AppBackground"))
         .preferredColorScheme(.dark)
 }

@@ -6,28 +6,42 @@
 import SwiftUI
 
 struct TodoListView: View {
-    @State private var todos: [Todo] = Todo.sampleData
-    @State private var searchText: String = ""
+    @StateObject private var viewModel = TodoListViewModel()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $viewModel.path) {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Задачи")
-                    .font(.system(size: 34, weight: .bold))
+                    .font(.system(size: 36, weight: .bold))
                     .foregroundStyle(Color("AppWhite"))
                     .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .padding(.bottom, 16)
+                    .padding(.top, 20)
+                    .padding(.bottom)
 
                 searchField
                     .padding(.horizontal, 20)
                     .padding(.bottom)
 
                 List {
-                    ForEach($todos) { $todo in
+                    ForEach(viewModel.todos) { todo in
                         VStack(spacing: 0) {
-                            TodoRowView(todo: $todo)
-                            if todo.id != todos.last?.id {
+                            TodoRowView(
+                                todo: todo,
+                                onToggle: {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        viewModel.toggle(todo)
+                                    }
+                                },
+                                onDelete: {
+                                    withAnimation {
+                                        viewModel.delete(todo)
+                                    }
+                                },
+                                onEdit: {
+                                    viewModel.path.append(todo)
+                                }
+                            )
+                            if todo.id != viewModel.todos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
                                     .frame(height: 0.5)
@@ -47,12 +61,17 @@ struct TodoListView: View {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 bottomBar
             }
+            .navigationDestination(for: Todo.self) { todo in
+                TodoEditView(todo: todo) { updatedTodo in
+                    viewModel.update(updatedTodo)
+                }
+            }
         }
     }
 
     private var bottomBar: some View {
         ZStack {
-            Text("\(todos.count) Задач")
+            Text("\(viewModel.todos.count) Задач")
                 .font(.system(size: 11, weight: .regular))
                 .foregroundStyle(Color("AppWhite"))
 
@@ -64,7 +83,8 @@ struct TodoListView: View {
                     .padding(.trailing, 20)
             }
         }
-        .padding(.vertical, 20)
+        .padding(.top, 20)
+        .padding(.bottom, 15)
         .background(Color("AppToolbarBackground"))
     }
 
@@ -73,8 +93,9 @@ struct TodoListView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(Color("AppGray"))
 
-            TextField("Search", text: $searchText)
+            TextField("Search", text: $viewModel.searchQuery)
                 .foregroundStyle(Color("AppGray"))
+                .font(.system(size: 17, weight: .regular))
 
             Image(systemName: "mic.fill")
                 .foregroundStyle(Color("AppGray"))
