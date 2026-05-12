@@ -41,6 +41,10 @@ struct TodoListView: View {
                                     viewModel.path.append(todo)
                                 }
                             )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewModel.path.append(todo)
+                            }
                             if todo.id != viewModel.todos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
