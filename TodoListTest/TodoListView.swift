@@ -13,11 +13,11 @@ struct TodoListView: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Задачи")
-                    .font(.system(size: 34, weight: .bold))
+                    .font(.system(size: 36, weight: .bold))
                     .foregroundStyle(Color("AppWhite"))
                     .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .padding(.bottom, 16)
+                    .padding(.top, 20)
+                    .padding(.bottom)
 
                 searchField
                     .padding(.horizontal, 20)
@@ -64,7 +64,8 @@ struct TodoListView: View {
                     .padding(.trailing, 20)
             }
         }
-        .padding(.vertical, 20)
+        .padding(.top, 20)
+        .padding(.bottom, 15)
         .background(Color("AppToolbarBackground"))
     }
 
@@ -75,6 +76,7 @@ struct TodoListView: View {
 
             TextField("Search", text: $searchText)
                 .foregroundStyle(Color("AppGray"))
+                .font(.system(size: 17, weight: .regular))
 
             Image(systemName: "mic.fill")
                 .foregroundStyle(Color("AppGray"))
