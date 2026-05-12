@@ -23,7 +23,7 @@ struct TodoRowView: View {
             } label: {
                 Image(systemName: todo.isCompleted ? "checkmark.circle" : "circle")
                     .font(.system(size: 24, weight: .light))
-                    .frame(width: 24, height: 24)
+                    .frame(width: 28, height: 28)
                     .foregroundStyle(todo.isCompleted ? Color("AppYellow") : Color("AppStroke"))
                     .contentShape(Rectangle())
             }
@@ -31,21 +31,21 @@ struct TodoRowView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(todo.title)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 17, weight: .medium))
                     .tracking(-0.43)
                     .strikethrough(todo.isCompleted, color: Color("AppGray"))
                     .foregroundStyle(todo.isCompleted ? Color("AppGray") : Color("AppWhite"))
 
                 if !todo.details.isEmpty {
                     Text(todo.details)
-                        .font(.system(size: 12, weight: .regular))
-                        .lineSpacing(16 - 12)
-                        .foregroundStyle(Color("AppGray"))
+                        .font(.system(size: 13, weight: .regular))
+                        .lineSpacing(6)
+                        .foregroundStyle(todo.isCompleted ? Color("AppGray") : Color("AppWhite"))
                         .lineLimit(2)
                 }
 
                 Text(Self.dateFormatter.string(from: todo.createdAt))
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 13, weight: .regular))
                     .foregroundStyle(Color("AppGray"))
             }
         }
@@ -78,23 +78,23 @@ struct TodoRowView: View {
     private var contextPreview: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(todo.title)
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 17, weight: .medium))
                 .tracking(-0.43)
                 .foregroundStyle(Color("AppWhite"))
 
             if !todo.details.isEmpty {
                 Text(todo.details)
-                    .font(.system(size: 12, weight: .regular))
-                    .lineSpacing(16 - 12)
+                    .font(.system(size: 13, weight: .regular))
+                    .lineSpacing(4)
                     .foregroundStyle(Color("AppWhite"))
             }
 
             Text(Self.dateFormatter.string(from: todo.createdAt))
-                .font(.system(size: 12, weight: .regular))
+                .font(.system(size: 13, weight: .regular))
                 .foregroundStyle(Color("AppGray"))
                 .padding(.top, 6)
         }
-        .padding(16)
+        .padding()
         .frame(width: UIScreen.main.bounds.width - 40, alignment: .leading)
         .background(Color("AppSearchBackground"))
     }
