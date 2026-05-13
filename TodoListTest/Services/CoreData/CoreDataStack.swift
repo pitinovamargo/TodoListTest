@@ -21,8 +21,6 @@ final class CoreDataStack {
                 fatalError("Не удалось загрузить базу: \(error)")
             }
         }
-
-        container.viewContext.automaticallyMergesChangesFromParent = true
     }
 
     func newBackgroundContext() -> NSManagedObjectContext {
