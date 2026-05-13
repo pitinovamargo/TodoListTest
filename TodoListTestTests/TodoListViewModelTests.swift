@@ -56,7 +56,7 @@ final class TodoListViewModelTests: XCTestCase {
         await viewModel.load()
 
         XCTAssertEqual(api.fetchCallCount, 0)
-        XCTAssertEqual(storage.fetchAllCallCount, 1)
+        XCTAssertEqual(storage.searchCallCount, 1)
         XCTAssertEqual(viewModel.todos.count, 1)
     }
 
@@ -157,67 +157,9 @@ final class TodoListViewModelTests: XCTestCase {
         XCTAssertEqual(storage.deleteCallCount, 1)
     }
 
-    // MARK: - displayedTodos
-
-    func test_displayedTodos_filtersBySearchQuery() async {
-        storage.storedTodos = [
-            Todo(title: "Купить продукты", details: "хлеб и молоко"),
-            Todo(title: "Позвонить маме"),
-            Todo(title: "Сделать зарядку")
-        ]
-        flag.set()
-
-        let viewModel = makeViewModel()
-        await viewModel.load()
-        viewModel.searchQuery = "мам"
-
-        XCTAssertEqual(viewModel.displayedTodos.count, 1)
-        XCTAssertEqual(viewModel.displayedTodos[0].title, "Позвонить маме")
-    }
-
-    func test_displayedTodos_searchIsCaseInsensitive() async {
-        storage.storedTodos = [Todo(title: "Купить ПРОДУКТЫ")]
-        flag.set()
-
-        let viewModel = makeViewModel()
-        await viewModel.load()
-        viewModel.searchQuery = "продукты"
-
-        XCTAssertEqual(viewModel.displayedTodos.count, 1)
-    }
-
-    func test_displayedTodos_searchMatchesDetails() async {
-        storage.storedTodos = [
-            Todo(title: "Покупки", details: "молоко"),
-            Todo(title: "Звонок", details: "врач")
-        ]
-        flag.set()
-
-        let viewModel = makeViewModel()
-        await viewModel.load()
-        viewModel.searchQuery = "врач"
-
-        XCTAssertEqual(viewModel.displayedTodos.count, 1)
-        XCTAssertEqual(viewModel.displayedTodos[0].title, "Звонок")
-    }
-
-    func test_displayedTodos_sortsByUpdatedAtDescending() async {
-        storage.storedTodos = [
-            Todo(title: "Old", updatedAt: Date(timeIntervalSince1970: 1000)),
-            Todo(title: "New", updatedAt: Date(timeIntervalSince1970: 3000)),
-            Todo(title: "Middle", updatedAt: Date(timeIntervalSince1970: 2000))
-        ]
-        flag.set()
-
-        let viewModel = makeViewModel()
-        await viewModel.load()
-
-        XCTAssertEqual(viewModel.displayedTodos.map(\.title), ["New", "Middle", "Old"])
-    }
-
     // MARK: - startNewTodo
 
-    func test_startNewTodo_appendsEmptyTodoToPath() {
+    func test_startNewTodo_appendsEmptyTodoToPath() async {
         let viewModel = makeViewModel()
 
         XCTAssertTrue(viewModel.path.isEmpty)
