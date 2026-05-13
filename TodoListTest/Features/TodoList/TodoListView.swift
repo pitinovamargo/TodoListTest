@@ -8,8 +8,18 @@ import SwiftUI
 struct TodoListView: View {
     @StateObject private var viewModel: TodoListViewModel
 
-    init(storage: TodoStorageProtocol) {
-        _viewModel = StateObject(wrappedValue: TodoListViewModel(storage: storage))
+    init(
+        storage: TodoStorageProtocol,
+        api: TodoAPIServiceProtocol,
+        initialLoadFlag: InitialLoadFlag
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: TodoListViewModel(
+                storage: storage,
+                api: api,
+                initialLoadFlag: initialLoadFlag
+            )
+        )
     }
 
     var body: some View {
@@ -134,6 +144,10 @@ struct TodoListView: View {
 }
 
 #Preview {
-    TodoListView(storage: TodoStorage(stack: CoreDataStack(inMemory: true)))
-        .preferredColorScheme(.dark)
+    TodoListView(
+        storage: TodoStorage(stack: CoreDataStack(inMemory: true)),
+        api: TodoAPIService(),
+        initialLoadFlag: InitialLoadFlag()
+    )
+    .preferredColorScheme(.dark)
 }
