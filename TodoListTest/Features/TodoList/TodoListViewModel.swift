@@ -13,9 +13,17 @@ final class TodoListViewModel: ObservableObject {
     @Published var path: [Todo] = []
 
     private let storage: TodoStorageProtocol
+    private let api: TodoAPIServiceProtocol
+    private let initialLoadFlag: InitialLoadFlag
 
-    init(storage: TodoStorageProtocol) {
+    init(
+        storage: TodoStorageProtocol,
+        api: TodoAPIServiceProtocol,
+        initialLoadFlag: InitialLoadFlag
+    ) {
         self.storage = storage
+        self.api = api
+        self.initialLoadFlag = initialLoadFlag
     }
 
     var displayedTodos: [Todo] {
@@ -34,6 +42,11 @@ final class TodoListViewModel: ObservableObject {
 
     func load() async {
         do {
+            if !initialLoadFlag.isSet {
+                let imported = try await api.fetchTodos()
+                try await storage.save(imported)
+                initialLoadFlag.set()
+            }
             todos = try await storage.fetchAll()
         } catch {
             print("Не удалось загрузить задачи: \(error)")

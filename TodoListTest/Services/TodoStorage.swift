@@ -9,6 +9,7 @@ import CoreData
 protocol TodoStorageProtocol {
     func fetchAll() async throws -> [Todo]
     func save(_ todo: Todo) async throws
+    func save(_ todos: [Todo]) async throws
     func delete(id: UUID) async throws
     func search(_ query: String) async throws -> [Todo]
 }
@@ -41,6 +42,21 @@ final class TodoStorage: TodoStorageProtocol {
 
             let entity = try context.fetch(request).first ?? TodoEntity(context: context)
             entity.apply(todo)
+            try context.save()
+        }
+    }
+
+    func save(_ todos: [Todo]) async throws {
+        let context = stack.newBackgroundContext()
+        try await context.perform {
+            for todo in todos {
+                let request = TodoEntity.fetchRequest()
+                request.predicate = NSPredicate(format: "id == %@", todo.id as CVarArg)
+                request.fetchLimit = 1
+
+                let entity = try context.fetch(request).first ?? TodoEntity(context: context)
+                entity.apply(todo)
+            }
             try context.save()
         }
     }
