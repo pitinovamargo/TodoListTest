@@ -23,7 +23,7 @@ struct TodoListView: View {
                     .padding(.bottom)
 
                 List {
-                    ForEach(viewModel.sortedTodos) { todo in
+                    ForEach(viewModel.displayedTodos) { todo in
                         VStack(spacing: 0) {
                             TodoRowView(
                                 todo: todo,
@@ -45,7 +45,7 @@ struct TodoListView: View {
                             .onTapGesture {
                                 viewModel.path.append(todo)
                             }
-                            if todo.id != viewModel.sortedTodos.last?.id {
+                            if todo.id != viewModel.displayedTodos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
                                     .frame(height: 0.5)
@@ -59,6 +59,7 @@ struct TodoListView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
+                .scrollDismissesKeyboard(.immediately)
             }
             .background(Color("AppBackground"))
             .toolbar(.hidden, for: .navigationBar)
@@ -105,8 +106,18 @@ struct TodoListView: View {
                 .foregroundStyle(Color("AppGray"))
                 .font(.system(size: 17, weight: .regular))
 
-            Image(systemName: "mic.fill")
-                .foregroundStyle(Color("AppGray"))
+            if viewModel.searchQuery.isEmpty {
+                Image(systemName: "mic.fill")
+                    .foregroundStyle(Color("AppGray"))
+            } else {
+                Button {
+                    viewModel.searchQuery = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color("AppGray"))
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 8)

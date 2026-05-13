@@ -12,8 +12,18 @@ final class TodoListViewModel: ObservableObject {
     @Published var searchQuery: String = ""
     @Published var path: [Todo] = []
 
-    var sortedTodos: [Todo] {
-        todos.sorted { $0.updatedAt > $1.updatedAt }
+    var displayedTodos: [Todo] {
+        let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let filtered: [Todo]
+        if query.isEmpty {
+            filtered = todos
+        } else {
+            filtered = todos.filter { todo in
+                todo.title.lowercased().contains(query)
+                    || todo.details.lowercased().contains(query)
+            }
+        }
+        return filtered.sorted { $0.updatedAt > $1.updatedAt }
     }
 
     func toggle(_ todo: Todo) {
