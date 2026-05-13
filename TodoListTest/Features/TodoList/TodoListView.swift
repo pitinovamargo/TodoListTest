@@ -6,7 +6,11 @@
 import SwiftUI
 
 struct TodoListView: View {
-    @StateObject private var viewModel = TodoListViewModel()
+    @StateObject private var viewModel: TodoListViewModel
+
+    init(storage: TodoStorageProtocol) {
+        _viewModel = StateObject(wrappedValue: TodoListViewModel(storage: storage))
+    }
 
     var body: some View {
         NavigationStack(path: $viewModel.path) {
@@ -72,6 +76,9 @@ struct TodoListView: View {
                 }
             }
         }
+        .task {
+            await viewModel.load()
+        }
     }
 
     private var bottomBar: some View {
@@ -127,6 +134,6 @@ struct TodoListView: View {
 }
 
 #Preview {
-    TodoListView()
+    TodoListView(storage: TodoStorage(stack: CoreDataStack(inMemory: true)))
         .preferredColorScheme(.dark)
 }

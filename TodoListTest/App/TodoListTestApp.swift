@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct TodoListTestApp: App {
+    private let storage: TodoStorageProtocol = TodoStorage(stack: CoreDataStack())
+
     var body: some Scene {
         WindowGroup {
-            TodoListView()
+            TodoListView(storage: storage)
                 .preferredColorScheme(.dark)
         }
     }
