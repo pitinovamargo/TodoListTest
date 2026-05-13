@@ -55,7 +55,7 @@ struct TodoEditView: View {
             focusedField = .title
         }
         .onDisappear {
-            if viewModel.canSave {
+            if viewModel.canSave && viewModel.hasChanges {
                 onSave(viewModel.updatedTodo())
             }
         }

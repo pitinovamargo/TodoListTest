@@ -23,7 +23,7 @@ struct TodoListView: View {
                     .padding(.bottom)
 
                 List {
-                    ForEach(viewModel.todos) { todo in
+                    ForEach(viewModel.sortedTodos) { todo in
                         VStack(spacing: 0) {
                             TodoRowView(
                                 todo: todo,
@@ -45,7 +45,7 @@ struct TodoListView: View {
                             .onTapGesture {
                                 viewModel.path.append(todo)
                             }
-                            if todo.id != viewModel.todos.last?.id {
+                            if todo.id != viewModel.sortedTodos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
                                     .frame(height: 0.5)
@@ -67,7 +67,7 @@ struct TodoListView: View {
             }
             .navigationDestination(for: Todo.self) { todo in
                 TodoEditView(todo: todo) { updatedTodo in
-                    viewModel.update(updatedTodo)
+                    viewModel.save(updatedTodo)
                 }
             }
         }
@@ -81,10 +81,14 @@ struct TodoListView: View {
 
             HStack {
                 Spacer()
-                Image(systemName: "square.and.pencil")
-                    .font(.system(size: 22, weight: .regular))
-                    .foregroundStyle(Color("AppYellow"))
-                    .padding(.trailing, 20)
+                Button {
+                    viewModel.startNewTodo()
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundStyle(Color("AppYellow"))
+                }
+                .padding(.trailing, 20)
             }
         }
         .padding(.top, 20)
