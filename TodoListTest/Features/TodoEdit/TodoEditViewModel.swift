@@ -23,6 +23,10 @@ final class TodoEditViewModel: ObservableObject {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    var hasChanges: Bool {
+        title != originalTodo.title || details != originalTodo.details
+    }
+
     var formattedDate: String {
         Self.dateFormatter.string(from: originalTodo.createdAt)
     }
