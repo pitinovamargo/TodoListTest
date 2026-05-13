@@ -15,6 +15,7 @@ final class TodoListViewModel: ObservableObject {
     private let storage: TodoStorageProtocol
     private let api: TodoAPIServiceProtocol
     private let initialLoadFlag: InitialLoadFlag
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         storage: TodoStorageProtocol,
@@ -24,20 +25,7 @@ final class TodoListViewModel: ObservableObject {
         self.storage = storage
         self.api = api
         self.initialLoadFlag = initialLoadFlag
-    }
-
-    var displayedTodos: [Todo] {
-        let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let filtered: [Todo]
-        if query.isEmpty {
-            filtered = todos
-        } else {
-            filtered = todos.filter { todo in
-                todo.title.lowercased().contains(query)
-                    || todo.details.lowercased().contains(query)
-            }
-        }
-        return filtered.sorted { $0.updatedAt > $1.updatedAt }
+        bindSearch()
     }
 
     func load() async {
@@ -47,7 +35,7 @@ final class TodoListViewModel: ObservableObject {
                 try await storage.save(imported)
                 initialLoadFlag.set()
             }
-            todos = try await storage.fetchAll()
+            todos = try await storage.search(searchQuery)
         } catch {
             print("Не удалось загрузить задачи: \(error)")
         }
@@ -74,11 +62,34 @@ final class TodoListViewModel: ObservableObject {
         } else {
             todos.append(bumped)
         }
+        todos.sort { $0.updatedAt > $1.updatedAt }
         persist(bumped)
     }
 
     func startNewTodo() {
         path.append(Todo(title: ""))
+    }
+
+    private func bindSearch() {
+        $searchQuery
+            .removeDuplicates()
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .sink { [weak self] query in
+                self?.runSearch(query)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func runSearch(_ query: String) {
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let results = try await self.storage.search(query)
+                self.todos = results
+            } catch {
+                print("Поиск не удался: \(error)")
+            }
+        }
     }
 
     private func persist(_ todo: Todo) {
