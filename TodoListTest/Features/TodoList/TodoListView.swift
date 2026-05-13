@@ -37,7 +37,7 @@ struct TodoListView: View {
                     .padding(.bottom)
 
                 List {
-                    ForEach(viewModel.displayedTodos) { todo in
+                    ForEach(viewModel.todos) { todo in
                         VStack(spacing: 0) {
                             TodoRowView(
                                 todo: todo,
@@ -59,7 +59,7 @@ struct TodoListView: View {
                             .onTapGesture {
                                 viewModel.path.append(todo)
                             }
-                            if todo.id != viewModel.displayedTodos.last?.id {
+                            if todo.id != viewModel.todos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
                                     .frame(height: 0.5)
