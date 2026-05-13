@@ -43,8 +43,11 @@ struct TodoEditView: View {
                 .foregroundStyle(Color("AppWhite"))
                 .tint(Color("AppYellow"))
                 .focused($focusedField, equals: .details)
-
-            Spacer()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    focusedField = .details
+                }
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
