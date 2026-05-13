@@ -10,6 +10,7 @@ struct Todo: Identifiable, Hashable {
     var title: String
     var details: String
     var createdAt: Date
+    var updatedAt: Date
     var isCompleted: Bool
 
     init(
@@ -17,12 +18,14 @@ struct Todo: Identifiable, Hashable {
         title: String,
         details: String = "",
         createdAt: Date = Date(),
+        updatedAt: Date? = nil,
         isCompleted: Bool = false
     ) {
         self.id = id
         self.title = title
         self.details = details
         self.createdAt = createdAt
+        self.updatedAt = updatedAt ?? createdAt
         self.isCompleted = isCompleted
     }
 }

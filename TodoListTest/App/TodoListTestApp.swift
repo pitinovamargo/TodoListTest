@@ -11,7 +11,7 @@ import SwiftUI
 struct TodoListTestApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodoListView()
                 .preferredColorScheme(.dark)
         }
     }

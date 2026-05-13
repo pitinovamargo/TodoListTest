@@ -23,7 +23,7 @@ struct TodoListView: View {
                     .padding(.bottom)
 
                 List {
-                    ForEach(viewModel.todos) { todo in
+                    ForEach(viewModel.displayedTodos) { todo in
                         VStack(spacing: 0) {
                             TodoRowView(
                                 todo: todo,
@@ -41,7 +41,11 @@ struct TodoListView: View {
                                     viewModel.path.append(todo)
                                 }
                             )
-                            if todo.id != viewModel.todos.last?.id {
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewModel.path.append(todo)
+                            }
+                            if todo.id != viewModel.displayedTodos.last?.id {
                                 Rectangle()
                                     .fill(Color("AppStroke"))
                                     .frame(height: 0.5)
@@ -55,6 +59,7 @@ struct TodoListView: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
+                .scrollDismissesKeyboard(.immediately)
             }
             .background(Color("AppBackground"))
             .toolbar(.hidden, for: .navigationBar)
@@ -63,7 +68,7 @@ struct TodoListView: View {
             }
             .navigationDestination(for: Todo.self) { todo in
                 TodoEditView(todo: todo) { updatedTodo in
-                    viewModel.update(updatedTodo)
+                    viewModel.save(updatedTodo)
                 }
             }
         }
@@ -77,10 +82,14 @@ struct TodoListView: View {
 
             HStack {
                 Spacer()
-                Image(systemName: "square.and.pencil")
-                    .font(.system(size: 22, weight: .regular))
-                    .foregroundStyle(Color("AppYellow"))
-                    .padding(.trailing, 20)
+                Button {
+                    viewModel.startNewTodo()
+                } label: {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundStyle(Color("AppYellow"))
+                }
+                .padding(.trailing, 20)
             }
         }
         .padding(.top, 20)
@@ -97,8 +106,18 @@ struct TodoListView: View {
                 .foregroundStyle(Color("AppGray"))
                 .font(.system(size: 17, weight: .regular))
 
-            Image(systemName: "mic.fill")
-                .foregroundStyle(Color("AppGray"))
+            if viewModel.searchQuery.isEmpty {
+                Image(systemName: "mic.fill")
+                    .foregroundStyle(Color("AppGray"))
+            } else {
+                Button {
+                    viewModel.searchQuery = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color("AppGray"))
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 8)
